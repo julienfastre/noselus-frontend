@@ -35,6 +35,10 @@
           files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
           tasks: ['neuter']
         },
+        lint: {
+          files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
+          tasks: ['jshint']
+        },
         livereload: {
           options: {
             livereload: LIVERELOAD_PORT
@@ -223,6 +227,19 @@
             dest: '.tmp/index.html'
           }]
         },
+        appjava: {
+          options: {
+            variables: {
+              ember: 'bower_components/ember/ember.js',
+              ember_data: 'bower_components/ember-data-shim/ember-data.prod.js',
+              app_config: 'scripts/app_config/development_java.js'
+            }
+          },
+          files: [{
+            src: '<%= yeoman.app %>/index.html',
+            dest: '.tmp/index.html'
+          }]
+        },
         dist: {
           options: {
             variables: {
@@ -310,8 +327,33 @@
           src: '<%= yeoman.app %>/scripts/app.js',
           dest: '.tmp/scripts/combined-scripts.js'
         }
+      },
+      manifest: {
+        generate: {
+          options: {
+            basePath: '<%= yeoman.dist %>',
+            network: ['*'],
+            preferOnline: false,
+            timestamp: true
+          },
+          src: [
+            // Put HTML, CSS and JS first (not sure if it makes a difference)
+            '**/*.html',
+            '**/*.css',
+            '**/*.js',
+            // Then include everything else...
+            '**/*.*',
+            // .. but exclude these
+            '!apple-touch-*',
+            '!favicon.ico',
+            '!cache.manifest'
+          ],
+          dest: '<%= yeoman.dist %>/cache.manifest'
+        }
       }
     });
+
+    grunt.loadNpmTasks('grunt-manifest');
 
     grunt.registerTask('server', function (target) {
       if (target === 'dist') {
@@ -321,6 +363,22 @@
       grunt.task.run([
         'clean:server',
         'replace:app',
+        'concurrent:server',
+        'neuter:app',
+        'connect:livereload',
+        'copy:fonts_dev',
+        'watch'
+      ]);
+    });
+
+    grunt.registerTask('serverJava', function (target) {
+      if (target === 'dist') {
+        return grunt.task.run(['build', 'open', 'connect:dist:keepalive']);
+      }
+
+      grunt.task.run([
+        'clean:server',
+        'replace:appjava',
         'concurrent:server',
         'neuter:app',
         'connect:livereload',
@@ -351,6 +409,7 @@
       'copy:fonts_dist',
       'rev',
       'usemin',
+      'manifest',
       'jshint'
     ]);
 
@@ -359,6 +418,12 @@
       'test',
       'build'
     ]);
+
+    grunt.registerTask('lint', [
+      'jshint'
+    ]);
+
+
   };
 
 }());

@@ -1,0 +1,48 @@
+// Activityfeed
+// ============
+
+.activityfeed--story {
+  padding-top: $padding-large-vertical;
+  border-top: 4px solid #eee;
+  margin-bottom: $padding-large-vertical;
+  &.activityfeed--story-answered {
+    border-top: 4px solid $alert-success-text;
+  }
+  .avatar {
+    margin-bottom: 10px;
+  }
+}
+
+.activityfeed--header h3 {
+  margin-top: 0;
+  &:hover {
+    color: $link-color;
+    cursor: pointer;
+  }
+}
+
+.activityfeed--header--authors {
+  margin-bottom: $padding-large-vertical/2;
+  display: block;
+}
+
+.activityfeed--header--authors--answer-added {
+  margin-bottom: 20px;
+  display: block;
+}
+
+.activityfeed--socialbox--actions {
+  list-style: none;
+  padding: $padding-large-vertical;
+  border-top: 1px solid #eee;
+  margin: 0;
+  li {
+    display: inline-block;
+    &:after {
+      content: ' -';
+    }
+    &:last-child:after {
+      content: '';
+    }
+  }
+}

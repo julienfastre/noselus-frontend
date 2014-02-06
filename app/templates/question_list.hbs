@@ -1,38 +1,55 @@
-<div class="media">
+<div {{bind-attr class='questionHasAnswer:activityfeed--story-answered :activityfeed--story'}}>
+  <div class="media">
     <div class="pull-left">
-      {{#link-to 'politician' askedByPolitician}}
-        {{{askedByPolitician.thumbImage}}}
+      {{#link-to 'politician' askedBy}}
+        {{{askedBy.thumbImage}}}
       {{/link-to}}
-      {{#link-to 'politician' askedToPolitician}}
-        {{{askedToPolitician.thumbImage}}}
+      {{#link-to 'politician' askedTo}}
+        {{{askedTo.thumbImage}}}
       {{/link-to}}
+      <div {{bind-attr class='askedBy.assembly :img-circle :thumbnail :avatar'}}></div>
     </div>
     <div class="media-body">
-      <div {{bind-attr class='askedByPolitician.assembly'}}></div>
-      <small class="activityfeed--header--authors text-muted small">
-        {{#link-to 'politician' askedByPolitician}}
-          {{askedByPolitician.fullName}}
-        {{/link-to}}
-        a demandé à
-        {{#link-to 'politician' askedToPolitician}}
-          {{askedToPolitician.fullName}}
-        {{/link-to}}
-        {{format-date dateAsked}}
-      </small>
       <header class="activityfeed--header">
-        <h3>
-          {{#link-to 'question' question}}
-            {{title}}
-          {{/link-to}}
-        </h3>
+        {{#link-to 'question' question tagName='h3'}}
+          {{title}}
+        {{/link-to}}
       </header>
+      <small class="activityfeed--header--authors text-muted small">
+        Posée
+        {{format-date dateAsked}}
+        par
+        {{#link-to 'politician' askedBy}}
+          <strong>{{askedBy.fullName}}</strong>
+        {{/link-to}}
+        à
+        {{#link-to 'politician' askedTo}}
+          <strong>{{askedTo.fullName}}</strong>
+        {{/link-to}}
+      </small>
+      <small>
+        {{#if questionHasAnswer}}
+          <strong class="activityfeed--header--authors--answer-added text-success">
+            <i class="glyphicon glyphicon-share-alt text-success"></i>
+            Réponse ajoutée
+          </strong>
+          {{!-- TODO replace by real answered_at date --}}
+          {{!-- {{format-date dateAsked}} --}}
+        {{else}}
+          <span class="activityfeed--header--authors--answer-added">
+            <i class="glyphicon glyphicon-share-alt text-muted"></i>
+            Pas de réponse
+          </span>
+        {{/if}}
+      </small>
       <div class="activityfeed--excerpt">
-        <p>{{{excerpt}}}</p>
+        <p class='text-muted'>{{{clean-text excerpt}}}</p>
         <p>
-          {{#link-to 'question' question}}
+          {{#link-to 'question' question class='btn btn-xs btn-default'}}
             Lire la suite
           {{/link-to}}
         </p>
       </div>
     </div>
+  </div>
 </div>

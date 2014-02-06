@@ -1,21 +1,49 @@
-Noselus.QuestionsController = Ember.ArrayController.extend({
+Noselus.QuestionsController = Ember.ArrayController.extend( InfiniteScroll.ControllerMixin, {
   searchQuery: null,
+  isSearching: false,
+  foundQuestionsTotal: function () {
+    var meta = this.store.metadataFor('question');
+    return meta.total;
+  }.property('model'),
 
-  search: function() {
-    var controller = this;
-    var query = controller.get('searchQuery').split(' ').join('+');
-    var content;
+  content : [],
+  // Throttle the text field value binding so you dont get 10000 requests while typing
+  searchQueryObserver: Ember.throttledObserver(function() {
+    var query = this.get('searchQuery').split(' ').join('+');
+    this.execQuery(query);
+  }, 'searchQuery', 600),
 
-    if (query === '') {
-      content = this.store.find('question');
+  execQuery: function (query) {
+    var content,
+        limit = 20,
+        params;
+
+    if (query !== '') {
+      params = {q: query, limit: limit};
     } else {
-      content = this.store.find('question', {q: query});
+      params = {limit: limit};
     }
-    controller.set('content', content);
 
-  }.observes('searchQuery'),
+    this.updateContent(params);
+  },
+
+  updateContent: function (params) {
+    var that = this;
+    var questions = that.store.find('question', params);
+    questions.then(function(data) {
+      that.set('isSearching', false);
+      that.set('model', data);
+    });
+  },
+
+  clearResults: function () {
+    this.set('isSearching', true);
+    this.store.unloadAll('question');
+  },
 
   activateSpinner: function() {
-    $('.spinner').spin();
-  }.observes('content.isLoaded')
+    setTimeout(function() {
+      $('.spinner').spin();
+    }, 100);
+  }.observes('isSearching')
 });
